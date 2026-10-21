@@ -1,4 +1,8 @@
-# devops-lab
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+# platform-lab
 
 Flask to-do API cu teste pytest. Proiectul meu de învățare pentru Platform Engineering: refac în mic arhitectura de la muncă (OpenShift cu operatori, Argo CD, Kafka, servicii AWS în spate, monitorizare cu alertare spre ServiceNow), câte un strat o dată.
 
@@ -21,6 +25,26 @@ Flask to-do API cu teste pytest. Proiectul meu de învățare pentru Platform En
 - Cluster: OpenShift Local, presetul OpenShift (minimum 10,5 GB de memorie liberă). Monitorizarea inclusă e oprită; Prometheus îl instalăm noi. Plan B: presetul MicroShift.
 - AWS simulat: Floci, în namespace-ul aws-sim, pe portul 4566. AWS-ul real doar în playground-ul KodeKloud.
 - Fără bani cheltuiți pe cloud.
+
+## Comenzi
+
+- Setup: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt -r requirements-dev.txt`
+- Toate testele: `pytest`
+- Un singur test: `pytest tests/test_main.py::test_delete_task`
+- Rulare locală: `python -m app.main` (port 8080)
+- Imagine: `podman build -t todo-api .` și `podman run -p 8080:8080 todo-api`
+
+## Arhitectura
+
+- `app/main.py`: toată aplicația Flask. Task-urile stau în memorie, în lista `TASKS` (se pierd la restart; mai târziu trec în Floci).
+- `/health` e folosit de probe-urile OpenShift; nu-l schimba fără să actualizezi și probe-urile.
+- Imaginea rulează ca `USER 1001` pe portul 8080, compatibil cu SCC-ul `restricted` din OpenShift.
+- Testele folosesc `app.test_client()`; fixture-ul `client` golește `TASKS` înainte de fiecare test.
+
+## Stadiul curent
+
+- Stratul activ: 1 (Container și CI). Făcut: Dockerfile. Rămas: Containerfile testat cu Podman, GitHub Actions, GHCR multi-arch.
+- Problemă cunoscută: ID-ul unui task nou e `len(TASKS) + 1`, deci după o ștergere pot apărea ID-uri duplicate.
 
 ## Reguli
 
