@@ -43,7 +43,7 @@ Flask to-do API cu teste pytest. Proiectul meu de învățare pentru Platform En
 
 ## Stadiul curent
 
-- Stratul activ: 1 (Container și CI). Făcut: Dockerfile. Rămas: Containerfile testat cu Podman, GitHub Actions, GHCR multi-arch.
+- Stratul activ: 1 (Container și CI). Făcut: Dockerfile, containerfile testat cu Podman. Rămas: GitHub Actions, GHCR multi-arch.
 - Problemă cunoscută: ID-ul unui task nou e `len(TASKS) + 1`, deci după o ștergere pot apărea ID-uri duplicate.
 
 ## Reguli
