@@ -38,12 +38,15 @@ Flask to-do API cu teste pytest. Proiectul meu de învățare pentru Platform En
 
 - `app/main.py`: toată aplicația Flask. Task-urile stau în memorie, în lista `TASKS` (se pierd la restart; mai târziu trec în Floci).
 - `/health` e folosit de probe-urile OpenShift; nu-l schimba fără să actualizezi și probe-urile.
-- Imaginea rulează ca `USER 1001` pe portul 8080, compatibil cu SCC-ul `restricted` din OpenShift.
+- Imaginea rulează ca `USER 1001` pe portul 8080. În OpenShift, SCC-ul `restricted-v2` ignoră acest UID și pornește containerul cu un UID aleator din intervalul namespace-ului, cu grupul 0; fișierele în care aplicația scrie trebuie să aibă permisiuni pentru grupul 0.
+- CI: `.github/workflows/ci.yml`. Jobul `test` (pytest) rulează la PR și la push pe `main` și e check obligatoriu în ruleset-ul `protect-main`; dacă îl redenumești, actualizează și ruleset-ul. Jobul `build` rulează doar la push pe `main` și publică `ghcr.io/tunwan/todo-api` (amd64 + arm64), cu tag-urile `latest` și SHA-ul commit-ului.
 - Testele folosesc `app.test_client()`; fixture-ul `client` golește `TASKS` înainte de fiecare test.
 
 ## Stadiul curent
 
-- Stratul activ: 1 (Container și CI). Făcut: Dockerfile, containerfile testat cu Podman. Rămas: GitHub Actions, GHCR multi-arch.
+- Stratul 1 (Container și CI): gata. Dockerfile testat cu Podman, CI cu pytest la fiecare PR, ruleset pe `main`, imagine multi-arch în GHCR.
+- Stratul activ: 2 (OpenShift Local).
+- `main` e protejat: orice schimbare intră prin branch + PR.
 - Problemă cunoscută: ID-ul unui task nou e `len(TASKS) + 1`, deci după o ștergere pot apărea ID-uri duplicate.
 
 ## Reguli
