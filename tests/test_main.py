@@ -12,7 +12,7 @@ def client():
 def test_health(client):
     resp = client.get("/health")
     assert resp.status_code == 200
-    assert resp.get_json() == {"status": "ok"}
+    assert resp.get_json() == {"status": "ok_not_ok"}
 
 
 def test_add_and_list_tasks(client):
